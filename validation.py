@@ -14,3 +14,13 @@ def validate(model, data):
         correct += torch.sum(pred == labels)
 
     return correct * 100. / total
+
+
+def validate_cel(model, data, cel):  # validation of cross-entropy loss
+    results = []
+    for i, (images, labels) in enumerate(data):
+        images = images.cuda()
+        labels = labels.cuda()
+        pred = model(images)
+        results.append(cel(pred, labels))
+    return sum(results) / len(results)

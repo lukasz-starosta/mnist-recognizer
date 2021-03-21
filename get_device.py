@@ -3,6 +3,9 @@ import torch
 
 def get_device():
     if torch.cuda.is_available():
-        return torch.device("cuda:0")
+        device = torch.device("cuda:0")
     else:
-        return torch.device("cpu")
+        device = torch.device("cpu")
+
+    print(f'Device used: {device}')
+    return device
