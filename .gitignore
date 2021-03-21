@@ -1,2 +1,3 @@
 mnist_data
 .idea
+model.pt
