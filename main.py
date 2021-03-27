@@ -1,8 +1,7 @@
 import sys
-from squeezenet_model import create_squeezenet_model
-from own_model import create_own_model
-from training import train
-from confusion_matrix import generate_conf_matrix
+from models.squeezenet_model import create_squeezenet_model
+from models.own_model import create_own_model
+from utils.training import train
 
 if len(sys.argv) > 1 and sys.argv[1] == '-s':
     print("Using Squeezenet model")
@@ -12,4 +11,3 @@ else:
     model = create_own_model()
 
 model = train(model)
-generate_conf_matrix(model)

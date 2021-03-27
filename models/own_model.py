@@ -1,5 +1,6 @@
 from torch import nn
 
+
 def create_own_model():
     # Modify to own architecture
     model = nn.Sequential(

@@ -1,24 +1,27 @@
 import copy
+import time
 from config import EPOCHS, LEARNING_RATE
 from torch import nn, optim
-from validation import validate, validate_cel
-from dataloaders import validation_dataloader, training_dataloader
-from save_to_file import save_to_file
+from utils.validation import validate, validate_cel
+from utils.dataloaders import validation_dataloader, training_dataloader
+from utils.io.save_to_file import save_to_file
 import matplotlib.pyplot as plt
-from get_device import get_device
+from utils.get_device import get_device
 
 
 def train(model):
+    time_start = time.time()
+
     device = get_device()
     cnn = model.to(device)
 
     accuracies = []
     training_losses = []
     validation_losses = []
+    max_accuracy = 0
 
     cel = nn.CrossEntropyLoss()
     optimizer = optim.Adam(cnn.parameters(), lr=LEARNING_RATE)
-    max_accuracy = 0
 
     for epoch in range(EPOCHS):
         losses = []
@@ -45,14 +48,22 @@ def train(model):
             best_model = copy.deepcopy(cnn)
             max_accuracy = accuracy
 
-            save_to_file(model)
-            print(f'Saving best model with accuracy: {max_accuracy}')
 
-        print(f'Epoch: {epoch + 1}, Accuracy: {accuracy}%')
+        print(
+            f'Epoch: {epoch + 1}, Accuracy: {accuracy}%, Training loss: {training_loss}, Validation loss: {validation_loss}')
+    time_end = time.time()
+    print(f'Training complete. Time elapsed: {time_end - time_start}s')
 
+    save_to_file(best_model)
+    print(f'Saving best model with accuracy: {max_accuracy}')
+
+    plt.plot(accuracies, label='Accuracy')
+    plt.legend()
+    plt.show()
+
+    plt.cla()
     plt.plot(training_losses, label='Training losses')
     plt.plot(validation_losses, label='Validation losses')
-    plt.plot(accuracies, label='Accuracies')
     plt.legend()
     plt.show()
 

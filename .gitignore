@@ -1,3 +1,5 @@
 mnist_data
 .idea
 model.pt
+squeezenet_model.pt
+wrong
