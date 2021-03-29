@@ -7,7 +7,8 @@ DIR_NAME = "wrong"
 # replace previous directory
 if os.path.exists(DIR_NAME):
     shutil.rmtree(DIR_NAME)
-    os.mkdir(DIR_NAME)
+
+os.mkdir(DIR_NAME)
 
 
 def save_wrong_result(id, image, predicted, actual):

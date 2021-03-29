@@ -1,7 +1,7 @@
 import copy
 import time
 from config import EPOCHS, LEARNING_RATE
-from torch import nn, optim
+from torch import nn, optim, cuda
 from utils.validation import validate, validate_cel
 from utils.dataloaders import validation_dataloader, training_dataloader
 from utils.io.save_to_file import save_to_file
@@ -35,27 +35,27 @@ def train(model):
             loss.backward()
             optimizer.step()
 
-        accuracy = float(validate(cnn, validation_dataloader))
-        accuracies.append(accuracy)
-
         training_loss = float(sum(losses) / len(losses))
         training_losses.append(training_loss)
 
-        validation_loss = float(validate_cel(cnn, validation_dataloader, cel))
-        validation_losses.append(validation_loss)
+        cuda.empty_cache()
+
+        validation_loss, accuracy = validate_cel(cnn, validation_dataloader, cel)
+        validation_losses.append(validation_loss.cpu())
+        accuracies.append(accuracy)
 
         if accuracy > max_accuracy:
             best_model = copy.deepcopy(cnn)
             max_accuracy = accuracy
 
-
         print(
             f'Epoch: {epoch + 1}, Accuracy: {accuracy}%, Training loss: {training_loss}, Validation loss: {validation_loss}')
+
     time_end = time.time()
     print(f'Training complete. Time elapsed: {time_end - time_start}s')
 
-    save_to_file(best_model)
     print(f'Saving best model with accuracy: {max_accuracy}')
+    save_to_file(best_model)
 
     plt.plot(accuracies, label='Accuracy')
     plt.legend()

@@ -13,20 +13,29 @@ def validate(model, data):
         x = model(images)
         value, pred = torch.max(x, 1)
         pred = pred.data.cpu()
-        total += x.size(0)
-        correct += torch.sum(pred == labels)
+        total += float(x.size(0))
+        correct += float(torch.sum(pred == labels))
 
     return correct * 100. / total
 
 
 def validate_cel(model, data, cel):
+    total = 0
+    correct = 0
     results = []
-    for i, (images, labels) in enumerate(data):
-        images = images.cuda()
-        labels = labels.cuda()
-        pred = model(images)
-        results.append(cel(pred, labels))
-    return sum(results) / len(results)
+
+    with(torch.set_grad_enabled(False)):
+        for i, (images, labels) in enumerate(data):
+            images = images.cuda()
+            labels = labels.cuda()
+            x = model(images)
+            results.append(cel(x, labels))
+
+            value, pred = torch.max(x, 1)
+            total += float(x.size(0))
+            correct += float(torch.sum(pred == labels))
+
+    return sum(results) / len(results), correct * 100. / total
 
 
 def get_predicted_actual(model, data):
